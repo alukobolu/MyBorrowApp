@@ -1,0 +1,59 @@
+module Main where
+
+--import Daml.Script() 
+type ItemCustodyId = ContractId ItemCustody
+
+-- tracks chain of custody of my property
+template ItemCustody
+    with
+        owner: Party
+        custodian: Party
+        lawyer : Party
+        itemName: Text
+        damages : Int
+    where
+        signatory owner
+        observer lawyer,custodian
+        choice ReleaseItemTo : ItemCustodyId
+            with
+                friend : Party
+                newDamages : Int
+            controller owner
+                do
+                    create this with 
+                        custodian = friend
+                        damages = newDamages
+
+
+        choice ReturnItemTo : ItemCustodyId
+            with
+                rightfulOwner : Party      
+                newDamages : Int 
+            controller custodian 
+                do
+                    create this with 
+                        custodian = rightfulOwner
+                        damages = newDamages
+
+-- test script
+
+{- setup: Script ItemCustodyId
+setup = script do 
+    bolu <- allocateParty "Bolu"
+    ajibz <- allocateParty "Ajibz"
+    peter <- allocateParty "Peter"
+
+    brandNewLaptop <- submit bolu do 
+        createCmd ItemCustody with
+            owner = bolu
+            custodian = bolu 
+            lawyer = peter
+            itemName = "Macbook Pro 2023"
+            damages = 0
+        
+    borrowAjibz <- submit bolu do
+        exerciseCmd brandNewLaptop ReleaseItemTo with friend = ajibz,newDamages = 2 
+
+    submit ajibz do
+        exerciseCmd borrowAjibz ReturnItemTo with rightfulOwner = bolu,newDamages = 15
+-}

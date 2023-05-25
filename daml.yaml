@@ -1,0 +1,16 @@
+sdk-version: 2.2.0
+name: MyBorrowApp
+source: daml
+# init-script: Main:setup
+parties:
+  - Micheal
+  - Bolu
+  - Peter
+  - Ajibz
+version: 0.0.1
+dependencies:
+  - daml-prim
+  - daml-stdlib
+  - daml-script
+# sandbox-options:
+#   - --wall-clock-time
